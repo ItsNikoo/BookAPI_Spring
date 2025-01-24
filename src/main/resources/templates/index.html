@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Example</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+      <h1 class="text-center my-4">Products</h1>
+      <button type="button" class="btn btn-primary" onclick="window.location.href='/add'">Add product</button>
+    </div>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Books Table</h1>
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Author</th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Thymeleaf будет генерировать строки таблицы -->
+            <tr th:each="book : ${books}">
+                <td th:text="${book.id}">1</td>
+                <td th:text="${book.author}">Author Name</td>
+                <td th:text="${book.title}">Book Title</td>
+                <td th:text="${book.genre}">Genre</td>
+                <td>
+                    <a type="button" class="btn btn-primary" th:href="@{/edit/{id}(id=${book.id})}">
+                        Edit book
+                    </a>
+                </td>
+                <td>
+                    <a type="button" class="btn btn-danger" th:href="@{/delete/{id}(id=${book.id})}" onclick="return confirm('Are you sure?')">
+                        Delete book
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
