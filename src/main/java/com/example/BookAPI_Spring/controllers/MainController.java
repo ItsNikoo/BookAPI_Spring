@@ -3,6 +3,9 @@ package com.example.BookAPI_Spring.controllers;
 
 import com.example.BookAPI_Spring.models.Book;
 import com.example.BookAPI_Spring.repositories.BookRepository;
+import com.example.BookAPI_Spring.services.AddBookService;
+import com.example.BookAPI_Spring.services.DeleteBookService;
+import com.example.BookAPI_Spring.services.EditBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,12 +18,16 @@ import java.util.List;
 
 @Controller
 public class MainController {
-
     private BookRepository bookRepository;
+    private AddBookService addBookService;
+    private DeleteBookService deleteBookService;
+    private EditBookService editBookService;
 
-    @Autowired
-    public MainController(BookRepository bookRepository) {
+    public MainController(BookRepository bookRepository, AddBookService addBookService, DeleteBookService deleteBookService, EditBookService editBookService) {
         this.bookRepository = bookRepository;
+        this.addBookService = addBookService;
+        this.deleteBookService = deleteBookService;
+        this.editBookService = editBookService;
     }
 
     @GetMapping("/")
@@ -30,31 +37,34 @@ public class MainController {
         return "index";
     }
 
-    /*@GetMapping("/edit/{id}")
-    public String getEditPage(@PathVariable Long id, Model model) {
-        try{
-            Book book = bookRepository.findById(id).get();
-            model.addAttribute("book", book);
-        }catch (Exception e){
-            model.addAttribute("error", "Book not found");
-            return "redirect:/";
-        }
-        return "edit";
+    @GetMapping("/add")
+    public String ShowAddBookForm(Model model) {
+        model.addAttribute("book", new Book());
+        return "add";
+    }
+
+    @PostMapping("/add")
+    public String addBook(@RequestParam String title, @RequestParam String author, @RequestParam String genre, Model model) {
+        addBookService.addBook(title,author,genre);
+        return "redirect:/";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBook(@PathVariable("id") Long id) {
+        deleteBookService.deleteBook(id);
+        return "redirect:/";
     }
 
     @PostMapping("/edit/{id}")
-    public String postEdit(@PathVariable Long id, @RequestParam String title, @RequestParam String author, @RequestParam String genre, Model model) {
-        try {
-            Book book = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
-            book.setTitle(title);
-            book.setAuthor(author);
-            book.setGenre(genre);
-            bookRepository.save(book);
-            model.addAttribute("book", book);
-        } catch (Exception e) {
-            model.addAttribute("error", "Book not found");
-            return "redirect:/";
-        }
+    public String editBook(@PathVariable Long id, @RequestParam String title, @RequestParam String author, @RequestParam String genre, Model model){
+        editBookService.editBook(id, title, author, genre);
         return "redirect:/";
-    }*/
+    }
+
+    @GetMapping("/edit/{id}")
+    public String ShowEditBookForm(@PathVariable Long id, Model model){
+        Book book = editBookService.getBookById(id);
+        model.addAttribute("book", book);
+        return "edit";
+    }
 }
